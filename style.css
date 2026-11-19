@@ -1,0 +1,144 @@
+
+/* Entire webpage */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #3e96ef;
+    margin: 0;
+    padding: 40px 20px;
+}
+
+/* Main application container */
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Main heading */
+h1 {
+    color: #b8147f;
+    text-align: center;
+}
+
+/* Description */
+p {
+    text-align: center;
+    color: #444;
+}
+
+/* Task input area */
+.task-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+/* Input label */
+.task-input label {
+    width: 100%;
+    font-weight: bold;
+}
+
+/* Text input */
+#taskInput {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* Add Task button */
+#addTaskBtn {
+    padding: 12px 16px;
+    background-color: #eba625;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#addTaskBtn:hover {
+    background-color: #15803d;
+    color: white;
+}
+
+/* Task list */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* Individual tasks */
+li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #f1f5f9;
+    border-radius: 6px;
+}
+
+/* Task description */
+li span {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+/* Task checkbox */
+li input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #25eb56;
+}
+
+/* Completed tasks */
+.completed {
+    text-decoration: line-through;
+    color: #666;
+}
+
+/* Delete buttons */
+.delete-btn {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #26b91c;
+}
+
+/* Button transitions */
+button {
+    transition: background-color 0.2s ease;
+}
+
+/* Keyboard focus */
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    .task-input {
+        flex-direction: column;
+    }
+}
