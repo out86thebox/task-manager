@@ -17,20 +17,25 @@
 
         <p>Add your stuff, and get it done!</p>
 
-        <div class="task-input">
-            <label for="taskInput">New Stuffs</label>
+        
+<div class="task-input">
+    <label for="taskInput">New Task</label>
 
-            <input
-                type="text"
-                id="taskInput"
-                placeholder="Enter a new stuff..."
-            >
+    <input
+        type="text"
+        id="taskInput"
+        placeholder="Enter a new task..."
+        aria-describedby="taskError"
+    >
 
-            <button id="addTaskBtn" type="button">
-                Add Stuff
-            </button>
-        </div>
+    <button id="addTaskBtn" type="button">
+        Add Task
+    </button>
 
+    <p id="taskError" role="alert" hidden>
+        this is still empty dummy
+    </p>
+</div>
         <h2>My Stuffs</h2>
 
         <ul id="taskList"></ul>

@@ -142,3 +142,95 @@ input:focus-visible {
         flex-direction: column;
     }
 }
+
+/* Empty task error message */
+#taskError {
+    width: 100%;
+    color: #b91c1c;
+    font-weight: bold;
+    margin: 0;
+}
+
+#taskError[hidden] {
+    display: none;
+}
+
+/* Allow explosion particles to move freely */
+#taskList li {
+    position: relative;
+}
+
+/* Task explosion animation */
+#taskList li.exploding {
+    pointer-events: none;
+    animation: taskExplosion 550ms ease-in forwards;
+}
+
+/* Individual explosion particles */
+.explosion-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background-color: var(--particle-color);
+    pointer-events: none;
+    z-index: 5;
+
+    animation: particleBurst 550ms ease-out forwards;
+}
+
+/* Make the task shake, expand, and disappear */
+@keyframes taskExplosion {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+
+    20% {
+        transform: scale(1.08) rotate(-3deg);
+    }
+
+    40% {
+        transform: scale(1.12) rotate(3deg);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(1.35) rotate(-2deg);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0.2) rotate(8deg);
+        opacity: 0;
+    }
+}
+
+/* Send particles flying outward */
+@keyframes particleBurst {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(
+                calc(-50% + var(--x)),
+                calc(-50% + var(--y))
+            )
+            rotate(360deg)
+            scale(0);
+        opacity: 0;
+    }
+}
+
+/* Accessibility: disable motion when requested */
+@media (prefers-reduced-motion: reduce) {
+    #taskList li.exploding,
+    .explosion-particle {
+        animation: none;
+    }
+}
