@@ -9,37 +9,36 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <main class="container">
-
         <h1>Get Stuff Done</h1>
 
-        <p>Add your stuff, and get it done!</p>
+        <p class="subtitle">
+            Add your stuff, and get it done!
+        </p>
 
-        
-<div class="task-input">
-    <label for="taskInput">New Task</label>
+        <form id="taskForm" class="task-input">
+            <label for="taskInput">New Task</label>
 
-    <input
-        type="text"
-        id="taskInput"
-        placeholder="Enter a new task..."
-        aria-describedby="taskError"
-    >
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter a new task..."
+                aria-describedby="taskError"
+            >
 
-    <button id="addTaskBtn" type="button">
-        Add Task
-    </button>
+            <button id="addTaskBtn" type="submit">
+                Add Task
+            </button>
 
-    <p id="taskError" role="alert" hidden>
-        this is still empty dummy
-    </p>
-</div>
+            <p id="taskError" role="alert" hidden>
+                this is still empty dummy
+            </p>
+        </form>
+
         <h2>My Stuffs</h2>
 
         <ul id="taskList"></ul>
-
     </main>
 
     <script src="script.js"></script>

@@ -1,32 +1,55 @@
 
-/* Get HTML elements */
+"use strict";
+
+/* =========================
+   ELEMENTS AND SETTINGS
+========================= */
+
+const taskForm = document.getElementById("taskForm");
 const taskInput = document.getElementById("taskInput");
-const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 const taskError = document.getElementById("taskError");
 
-/* Keep the original storage key */
 const STORAGE_KEY = "tasks";
 const EXPLOSION_TIME = 550;
+const PARTICLE_TIME = 850;
+
+const particleColors = [
+    "#ff4500",
+    "#ffcc00",
+    "#ff1744",
+    "#ff9100",
+    "#ffd600"
+];
 
 let tasks = [];
 const deletingTasks = new Set();
 
-/* Generate a unique task ID */
+/* =========================
+   TASK IDS
+========================= */
+
 function createTaskId() {
-    if (typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID === "function") {
+    if (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+    ) {
         return crypto.randomUUID();
     }
 
     return Date.now() + "-" + Math.random();
 }
 
-/* Add a task */
-function addTask() {
+/* =========================
+   ADD TASK
+========================= */
+
+function addTask(event) {
+    event.preventDefault();
+
     const taskText = taskInput.value.trim();
 
-    if (taskText === "") {
+    if (!taskText) {
         taskError.hidden = false;
         taskInput.focus();
         return;
@@ -43,20 +66,25 @@ function addTask() {
     tasks.push(newTask);
 
     taskInput.value = "";
+
     updateTasks();
     taskInput.focus();
 }
 
-/* Display tasks */
+/* =========================
+   DISPLAY TASKS
+========================= */
+
 function displayTasks() {
-    taskList.innerHTML = "";
+    taskList.replaceChildren();
 
     tasks.forEach(function(task) {
         const li = document.createElement("li");
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.checked = task.completed;
+        checkbox.checked = Boolean(task.completed);
+
         checkbox.setAttribute(
             "aria-label",
             "Complete " + task.text
@@ -67,6 +95,7 @@ function displayTasks() {
         });
 
         const span = document.createElement("span");
+        span.className = "task-text";
         span.textContent = task.text;
 
         if (task.completed) {
@@ -74,9 +103,9 @@ function displayTasks() {
         }
 
         const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
         deleteBtn.type = "button";
         deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "Delete";
 
         deleteBtn.setAttribute(
             "aria-label",
@@ -87,31 +116,66 @@ function displayTasks() {
             explodeTask(task.id, li, deleteBtn);
         });
 
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
-
+        li.append(checkbox, span, deleteBtn);
         taskList.appendChild(li);
     });
 }
 
-/* Create explosion particles */
-function createParticles(element) {
-    const colors = [
-        "#ff4500",
-        "#ffcc00",
-        "#ff1744",
-        "#ff9100",
-        "#ffd600"
-    ];
+/* =========================
+   COMPLETE TASK
+========================= */
 
-    for (let i = 0; i < 12; i++) {
+function toggleTask(id) {
+    const task = tasks.find(function(item) {
+        return item.id === id;
+    });
+
+    if (!task || deletingTasks.has(id)) {
+        return;
+    }
+
+    task.completed = !task.completed;
+    updateTasks();
+}
+
+/* =========================
+   EXPLOSION PARTICLES
+========================= */
+
+function createParticles(element) {
+    const rect = element.getBoundingClientRect();
+
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Create the bright flash
+    const flash = document.createElement("span");
+    flash.className = "explosion-flash";
+    flash.setAttribute("aria-hidden", "true");
+
+    flash.style.left = centerX + "px";
+    flash.style.top = centerY + "px";
+
+    document.body.appendChild(flash);
+
+    flash.addEventListener("animationend", function() {
+        flash.remove();
+    }, { once: true });
+
+    // Create 24 colorful particles
+    for (let i = 0; i < 24; i++) {
         const particle = document.createElement("span");
+
         particle.className = "explosion-particle";
         particle.setAttribute("aria-hidden", "true");
 
-        const angle = (Math.PI * 2 * i) / 12;
-        const distance = 60 + Math.random() * 65;
+        // Start at the center of the task
+        particle.style.left = centerX + "px";
+        particle.style.top = centerY + "px";
+
+        // Spread particles in every direction
+        const angle = (Math.PI * 2 * i) / 24;
+        const distance = 80 + Math.random() * 100;
 
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
@@ -121,14 +185,26 @@ function createParticles(element) {
 
         particle.style.setProperty(
             "--particle-color",
-            colors[i % colors.length]
+            particleColors[i % particleColors.length]
         );
 
-        element.appendChild(particle);
+        document.body.appendChild(particle);
+
+        // Remove particles after animation
+        particle.addEventListener(
+            "animationend",
+            function() {
+                particle.remove();
+            },
+            { once: true }
+        );
     }
 }
 
-/* Animate and delete a task */
+/* =========================
+   DELETE TASK WITH EXPLOSION
+========================= */
+
 function explodeTask(id, element, button) {
     if (deletingTasks.has(id)) {
         return;
@@ -158,19 +234,10 @@ function explodeTask(id, element, button) {
     }, delay);
 }
 
-/* Complete or uncomplete a task */
-function toggleTask(id) {
-    const task = tasks.find(function(item) {
-        return item.id === id;
-    });
+/* =========================
+   LOCAL STORAGE
+========================= */
 
-    if (task) {
-        task.completed = !task.completed;
-        updateTasks();
-    }
-}
-
-/* Save tasks */
 function saveTasks() {
     try {
         localStorage.setItem(
@@ -182,12 +249,11 @@ function saveTasks() {
     }
 }
 
-/* Load existing tasks */
 function loadTasks() {
     try {
         const savedTasks = localStorage.getItem(STORAGE_KEY);
 
-        if (savedTasks) {
+        if (savedTasks !== null) {
             const loadedTasks = JSON.parse(savedTasks);
 
             if (Array.isArray(loadedTasks)) {
@@ -201,26 +267,25 @@ function loadTasks() {
     displayTasks();
 }
 
-/* Update storage and screen */
 function updateTasks() {
     saveTasks();
     displayTasks();
 }
 
-/* Button click */
-addTaskBtn.addEventListener("click", addTask);
+/* =========================
+   EVENT LISTENERS
+========================= */
 
-/* Enter key */
-taskInput.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        addTask();
-    }
-});
+// Form submission handles button clicks and Enter
+taskForm.addEventListener("submit", addTask);
 
-/* Hide error when user types */
+// Hide the warning when typing begins
 taskInput.addEventListener("input", function() {
     taskError.hidden = true;
 });
 
-/* Load existing tasks on startup */
+/* =========================
+   START APPLICATION
+========================= */
+
 loadTasks();

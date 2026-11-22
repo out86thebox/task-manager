@@ -1,5 +1,12 @@
 
-/* Entire webpage */
+/* =========================
+   GENERAL PAGE STYLES
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #3e96ef;
@@ -7,7 +14,6 @@ body {
     padding: 40px 20px;
 }
 
-/* Main application container */
 .container {
     max-width: 500px;
     margin: 0 auto;
@@ -17,19 +23,20 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Main heading */
 h1 {
     color: #b8147f;
     text-align: center;
 }
 
-/* Description */
-p {
+.subtitle {
     text-align: center;
     color: #444;
 }
 
-/* Task input area */
+/* =========================
+   TASK INPUT
+========================= */
+
 .task-input {
     display: flex;
     flex-wrap: wrap;
@@ -37,13 +44,11 @@ p {
     margin-top: 25px;
 }
 
-/* Input label */
 .task-input label {
     width: 100%;
     font-weight: bold;
 }
 
-/* Text input */
 #taskInput {
     flex: 1;
     min-width: 0;
@@ -53,7 +58,6 @@ p {
     font-size: 16px;
 }
 
-/* Add Task button */
 #addTaskBtn {
     padding: 12px 16px;
     background-color: #eba625;
@@ -68,14 +72,27 @@ p {
     color: white;
 }
 
-/* Task list */
-ul {
+#taskError {
+    width: 100%;
+    margin: 0;
+    color: #b91c1c;
+    font-weight: bold;
+}
+
+#taskError[hidden] {
+    display: none;
+}
+
+/* =========================
+   TASK LIST
+========================= */
+
+#taskList {
     list-style: none;
     padding: 0;
 }
 
-/* Individual tasks */
-li {
+#taskList li {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -85,14 +102,13 @@ li {
     border-radius: 6px;
 }
 
-/* Task description */
-li span {
+.task-text {
     flex: 1;
+    min-width: 0;
     overflow-wrap: anywhere;
 }
 
-/* Task checkbox */
-li input[type="checkbox"] {
+#taskList input[type="checkbox"] {
     flex: 0 0 auto;
     width: 18px;
     height: 18px;
@@ -100,13 +116,15 @@ li input[type="checkbox"] {
     accent-color: #25eb56;
 }
 
-/* Completed tasks */
 .completed {
     text-decoration: line-through;
     color: #666;
 }
 
-/* Delete buttons */
+/* =========================
+   DELETE BUTTON
+========================= */
+
 .delete-btn {
     background-color: #dc2626;
     color: white;
@@ -120,68 +138,26 @@ li input[type="checkbox"] {
     background-color: #26b91c;
 }
 
-/* Button transitions */
 button {
     transition: background-color 0.2s ease;
 }
 
-/* Keyboard focus */
 button:focus-visible,
 input:focus-visible {
     outline: 3px solid #1d4ed8;
     outline-offset: 2px;
 }
 
-/* Small screens */
-@media (max-width: 480px) {
-    .container {
-        padding: 15px;
-    }
+/* =========================
+   TASK EXPLOSION
+========================= */
 
-    .task-input {
-        flex-direction: column;
-    }
-}
-
-/* Empty task error message */
-#taskError {
-    width: 100%;
-    color: #b91c1c;
-    font-weight: bold;
-    margin: 0;
-}
-
-#taskError[hidden] {
-    display: none;
-}
-
-/* Allow explosion particles to move freely */
-#taskList li {
-    position: relative;
-}
-
-/* Task explosion animation */
+/* The task shakes, expands, and vanishes */
 #taskList li.exploding {
     pointer-events: none;
     animation: taskExplosion 550ms ease-in forwards;
 }
 
-/* Individual explosion particles */
-.explosion-particle {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    background-color: var(--particle-color);
-    pointer-events: none;
-    z-index: 5;
-
-    animation: particleBurst 550ms ease-out forwards;
-}
-
-/* Make the task shake, expand, and disappear */
 @keyframes taskExplosion {
     0% {
         transform: scale(1) rotate(0deg);
@@ -189,17 +165,18 @@ input:focus-visible {
     }
 
     20% {
-        transform: scale(1.08) rotate(-3deg);
+        transform: scale(1.08) rotate(-4deg);
+        opacity: 1;
     }
 
     40% {
-        transform: scale(1.12) rotate(3deg);
+        transform: scale(1.15) rotate(4deg);
         opacity: 1;
     }
 
     70% {
-        transform: scale(1.35) rotate(-2deg);
-        opacity: 0.5;
+        transform: scale(1.25) rotate(-3deg);
+        opacity: 0.6;
     }
 
     100% {
@@ -208,10 +185,28 @@ input:focus-visible {
     }
 }
 
-/* Send particles flying outward */
+/* Particles are positioned outside the task */
+.explosion-particle {
+    position: fixed;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--particle-color);
+
+    pointer-events: none;
+    z-index: 9999;
+
+    animation: particleBurst 850ms ease-out forwards;
+}
+
+/* Particles shoot outward and fade */
 @keyframes particleBurst {
     0% {
         transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    35% {
         opacity: 1;
     }
 
@@ -222,15 +217,67 @@ input:focus-visible {
                 calc(-50% + var(--y))
             )
             rotate(360deg)
-            scale(0);
+            scale(0.2);
+
         opacity: 0;
     }
 }
 
-/* Accessibility: disable motion when requested */
+/* Brief flash at the center of the explosion */
+.explosion-flash {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fff59d;
+    box-shadow:
+        0 0 20px 12px #ffcc00,
+        0 0 40px 20px #ff4500;
+
+    pointer-events: none;
+    z-index: 9998;
+
+    animation: explosionFlash 300ms ease-out forwards;
+}
+
+@keyframes explosionFlash {
+    from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
 @media (prefers-reduced-motion: reduce) {
     #taskList li.exploding,
-    .explosion-particle {
+    .explosion-particle,
+    .explosion-flash {
         animation: none;
+    }
+
+    button {
+        transition: none;
+    }
+}
+
+/* =========================
+   MOBILE LAYOUT
+========================= */
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    .task-input {
+        flex-direction: column;
     }
 }
